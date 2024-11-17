@@ -90,7 +90,7 @@ ORDER BY
             HumanMessage(content=state["messages"][-1].content)
         ]
         
-        llm = ChatOpenAI(model="gpt-4", temperature=0)
+        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
         response = llm.invoke(messages)
         sql_query = response.content.strip()
         
@@ -238,7 +238,7 @@ def generate_response(state: State) -> State:
         ]
         
         # Generate response using ChatGPT
-        llm = ChatOpenAI(model="gpt-4", temperature=0.7)
+        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
         response = llm.invoke(messages)
         
         return {
