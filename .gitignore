@@ -1,0 +1,35 @@
+# Ignore .env files (environment variables)
+.env
+
+# Byte-compiled Python files
+__pycache__/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore virtual environment directories
+env/
+venv/
+ENV/
+.venv/
+.ENV/
+
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore logs and runtime files
+*.log
+
+
+# Ignore pytest and testing results
+.pytest_cache/
+
+
+# Ignore database or data files
+*.sqlite3
+*.db
+
+
+# Ignore any other custom files
+logs/
