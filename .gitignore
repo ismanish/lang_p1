@@ -1,5 +1,6 @@
 # Ignore .env files (environment variables)
 .env
+*.ini
 
 # Byte-compiled Python files
 __pycache__/

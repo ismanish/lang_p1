@@ -40,6 +40,7 @@ class State(TypedDict):
     query_result: Optional[List[Dict[str, Any]]]  # Results from database query
     current_response: str  # Current response being generated
 
+
 def generate_sql(state: State) -> State:
     """Generate SQL query based on user input."""
     try:
@@ -149,6 +150,7 @@ def execute_query(state: State) -> State:
             "query_result": None,
             "current_response": error_msg
         }
+
 
 def format_query_result(query_result: List[Dict[str, Any]]) -> str:
     """Format query result into a readable string."""
@@ -347,6 +349,7 @@ def main():
         except Exception as e:
             print(f"\nError: {str(e)}")
             continue
+
 
 if __name__ == "__main__":
     main()
