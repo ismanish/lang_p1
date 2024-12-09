@@ -450,3 +450,119 @@ def interactive_mode():
 
 if __name__ == "__main__":
     interactive_mode()
+
+# To Account for multiple issues in the query:
+
+# def test_query_recovery_multiple_issues():
+#     """Test query recovery with multiple issues in the same query."""
+    
+#     params = config.config(section='local')
+#     recovery_helper = QueryRecoveryHelper(params)
+    
+#     # Test case with multiple issues
+#     test_cases = [
+#         ("""
+#         SELECT f.title, c.name, a.first_name 
+#         FROM film f 
+#         JOIN film_category fc ON f.film_id = fc.film_id 
+#         JOIN category c ON fc.category_id = c.category_id 
+#         JOIN film_actor fa ON f.film_id = fa.film_id
+#         JOIN actor a ON fa.actor_id = a.actor_id
+#         WHERE c.name = 'Sience Fiction'
+#         AND f.title = 'Jurasic Park'
+#         AND a.first_name = 'Jeniffer'
+#         """, 
+#         [
+#             ("category.name", "Sience Fiction"),
+#             ("film.title", "Jurasic Park"),
+#             ("actor.first_name", "Jeniffer")
+#         ])
+#     ]
+    
+#     for test_query, field_issues in test_cases:
+#         print("\nTesting query with multiple issues:")
+#         print(test_query.strip())
+#         print("-" * 50)
+        
+#         conn = None
+#         try:
+#             # First try the original query
+#             conn = psycopg2.connect(**params)
+#             cur = conn.cursor(cursor_factory=RealDictCursor)
+#             cur.execute(test_query)
+#             results = cur.fetchall()
+            
+#             if not results:
+#                 raise Exception("No results found")
+                
+#         except Exception as e:
+#             print(f"Query failed as expected: {str(e)}")
+            
+#             # Track all corrections needed
+#             corrections = {}
+#             recovered_query = test_query
+            
+#             # Process each issue
+#             for field_path, search_term in field_issues:
+#                 table, column = field_path.split('.')
+                
+#                 # Get possible values for this column
+#                 cur = conn.cursor()
+#                 cur.execute(f"SELECT DISTINCT {column} FROM {table}")
+#                 possible_values = [str(row[0]) for row in cur.fetchall()]
+                
+#                 # Handle category special cases
+#                 if table == 'category':
+#                     search_variations = [
+#                         search_term,
+#                         search_term.replace(' ', '-'),
+#                         search_term.replace('-', ' '),
+#                         'Sci-Fi' if 'sci' in search_term.lower() else search_term,
+#                         'Science Fiction' if 'sci' in search_term.lower() else search_term
+#                     ]
+                    
+#                     best_similar = None
+#                     best_score = 0
+#                     for variation in search_variations:
+#                         similar = recovery_helper.find_similar_values(variation, possible_values)
+#                         if similar and similar[0][1] > best_score:
+#                             best_similar = similar[0]
+#                             best_score = similar[0][1]
+                    
+#                     if best_similar:
+#                         similar = [(best_similar[0], best_similar[1])]
+#                     else:
+#                         similar = []
+#                 else:
+#                     similar = recovery_helper.find_similar_values(search_term, possible_values)
+                
+#                 if similar:
+#                     print(f"\nFor {field_path}, found similar values:")
+#                     for match, score in similar:
+#                         print(f"  - {match} (similarity: {score}%)")
+                    
+#                     best_match = similar[0][0]
+#                     corrections[search_term] = best_match
+                    
+#             # Apply all corrections to query
+#             for original, corrected in corrections.items():
+#                 recovered_query = recovered_query.replace(f"'{original}'", f"'{corrected}'")
+#                 recovered_query = recovered_query.replace(f"'%{original}%'", f"'%{corrected}%'")
+            
+#             print("\nTrying recovered query with all corrections:")
+#             print(recovered_query.strip())
+            
+#             try:
+#                 cur = conn.cursor(cursor_factory=RealDictCursor)
+#                 cur.execute(recovered_query)
+#                 results = cur.fetchall()
+#                 print("\nQuery executed successfully!")
+#                 print("Results:")
+#                 for row in results:
+#                     print(row)
+#             except Exception as e2:
+#                 print(f"\nRecovered query failed: {str(e2)}")
+        
+#         finally:
+#             if conn:
+#                 conn.close()
